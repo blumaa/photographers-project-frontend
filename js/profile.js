@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Variables
   let allPhotographers = []
   let user
   user = 9
@@ -6,8 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const myPics = document.getElementById('my-pics-btn')
   const showPanel = document.getElementById('show-panel')
 
+// Main Photographer Profile
   getProfileInfo()
 
+// get the photographer
   function getProfileInfo() {
     fetch(URL + `/photographers/${user}`)
       .then(resp => resp.json())
@@ -24,18 +27,92 @@ document.addEventListener('DOMContentLoaded', () => {
     profileInfoDiv.innerHTML = newPhotogHtml
   }
 
+// My Pictures side panel button
+
   myPics.addEventListener('click', (event) => {
     console.log(event.target)
     handleMyPictures()
   })
 
+// My pictures show panel
+
   function handleMyPictures() {
     showPanel.innerHTML = ""
-    getUploadPicture()
+    showPanel.innerHTML = getUploadPictureForm()
+
+    document.getElementById('upload-image-form').onsubmit = (event) => {
+      event.preventDefault()
+      postImage(event.target)
+    }
+
+    pictureGallery()
   }
 
-  function getUploadPicture() {
-    const uploadImageForm = (`
+// Picture Gallery
+
+function pictureGallery() {
+  getPhotogsPictures()
+
+  // const newPic = new Picture()
+}
+
+// get all pictures
+
+function getPhotogsPictures() {
+  return fetch('http://localhost:3000/pictures')
+    .then(resp => resp.json())
+    .then(picData => filterPics(picData))
+}
+
+function filterPics(picData) {
+  console.log(picData)
+  const filteredPics = picData.filter(pic => pic.photographer_id == user)
+  console.log('filtered pics', filteredPics)
+  const renderedPicsHtml = filteredPics.map(picture => renderPicsHtml(picture)).join('')
+  // console.log(renderedPicsHtml)
+  showPanel.insertAdjacentHTML('beforeend', renderedPicsHtml)
+}
+
+// map over all pics and return html
+
+function renderPicsHtml(picture) {
+  const photoHtml = new Picture(picture)
+  return photoHtml.render()
+}
+
+// Upload a picture
+  function postImage(form) {
+
+    let input = form[2].files[0]
+    // console.log('input', input)
+    const name = form[0].value
+    // console.log('name', name)
+    const description = form[1].value
+    // console.log('description', description)
+    const photographerId = user
+    // console.log('photographerId', photographerId)
+
+    let data = new FormData()
+
+    data.append('picture', input)
+    data.append('name', name)
+    data.append('description', description)
+    data.append('photographer_id', photographerId)
+
+    console.log('data', data)
+
+    fetch('http://localhost:3000/pictures', {
+      method: 'POST',
+      body: data
+    })
+      .then(resp => resp.json())
+      .then(imageData => console.log(imageData))
+  }
+
+// upload picture form
+
+  function getUploadPictureForm() {
+    return (`
       <div class="row">
         <form class="col s12" id="upload-image-form">
           <div class="row">
@@ -67,41 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </form>
       </div>
       `)
-
-      showPanel.innerHTML = uploadImageForm
-
-      document.getElementById('upload-image-form').onsubmit = (event) => {
-        event.preventDefault()
-        postImage(event.target)
-      }
-
-      function postImage(form) {
-
-        let input = form[2].files[0]
-        // console.log('input', input)
-        const name = form[0].value
-        // console.log('name', name)
-        const description = form[1].value
-        // console.log('description', description)
-        const photographerId = user
-        // console.log('photographerId', photographerId)
-
-        let data = new FormData()
-
-        data.append('picture', input)
-        data.append('name', name)
-        data.append('description', description)
-        data.append('photographer_id', photographerId)
-
-        console.log('data', data)
-
-        fetch('http://localhost:3000/pictures', {
-          method: 'POST',
-          body: data
-        })
-          .then(resp => resp.json())
-          .then(imageData => console.log(imageData))
-      }
   }
 
 })

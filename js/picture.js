@@ -2,11 +2,26 @@ class Picture{
   constructor(picture) {
     this.name = picture.name,
     this.description = picture.description,
-    this.pohtographerId = picture.photographer_id
+    this.photographerId = picture.photographer_id
+    this.url = picture.image
   }
 
   render() {
-    (``)
+    return (`
+        <div class="col s12 m6">
+          <div class="card" data-photographer-id="${this.photographerId}">
+            <div class="card-image">
+              <img src="http://localhost:3000/${this.url}">
+              <span class="card-title">${this.name}</span>
+              <a class="btn-floating waves-effect waves-light blue"><i class="material-icons">edit</i></a>
+              <a class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">delete</i></a>
+            </div>
+            <div class="card-content">
+              <p>${this.description}</p>
+            </div>
+          </div>
+        </div>
+        `)
   }
 
   renderUpdateForm() {
