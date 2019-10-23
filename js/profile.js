@@ -115,7 +115,8 @@ function renderPicHtml(picture) {
     })
       .then(resp => resp.json())
       .then(imageData => {
-        showPanel.insertAdjacentHTML('beforeend', renderPicsHtml(imageData))
+        renderPicHtml(imageData)
+        // showPanel.insertAdjacentHTML('beforeend', renderPicHtml(imageData))
         form[0].value = ""
         form[1].value = ""
         form[2].value = ""
