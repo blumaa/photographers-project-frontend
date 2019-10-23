@@ -57,5 +57,5 @@ class Picture{
       </div>
       `)
   }
-
+  
 }
