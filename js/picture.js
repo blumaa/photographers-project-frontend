@@ -373,5 +373,5 @@ class Picture{
         target.parentNode.parentNode.parentNode.parentNode.parentNode.remove()
       })
   }
-
+  
 }
