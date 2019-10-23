@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Variables
   let allPhotographers = []
   let user
-  user = 9
+  user = 5
   let URL = 'http://localhost:3000/'
   const myPics = document.getElementById('my-pics-btn')
   const showPanel = document.getElementById('show-panel')
@@ -12,16 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
 // Main Photographer Profile
   getProfileInfo()
 
+// Event listeners for pictures
+
 // get the photographer
   function getProfileInfo() {
-    fetch(URL + `/photographers/${user}`)
+    fetch(URL + `photographers/${user}`)
       .then(resp => resp.json())
       .then(photogData => renderProfileInfo(photogData))
   }
 
   function renderProfileInfo(photogData) {
     const profileInfoDiv = document.getElementById('profile-info')
-    // console.log(profileInfoDiv)
 
     const newPhotog = new Photographer(photogData)
     const newPhotogHtml = newPhotog.render()
@@ -32,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // My Pictures side panel button
 
   myPics.addEventListener('click', (event) => {
-    console.log(event.target)
     handleMyPictures()
   })
   
@@ -52,43 +52,51 @@ document.addEventListener('DOMContentLoaded', () => {
       postImage(event.target)
     }
 
-    pictureGallery()
+    getPhotogsPictures()
+
   }
 
 // Picture Gallery
 
-function pictureGallery() {
-  getPhotogsPictures()
-  // const newPic = new Picture()
-}
-
-// get all pictures
 
 function getPhotogsPictures() {
-  return fetch('http://localhost:3000/pictures')
+  return fetch(URL + 'pictures')
     .then(resp => resp.json())
     .then(picData => filterPics(picData))
 }
 
 
 function filterPics(picData) {
-  console.log(picData)
+  // console.log(picData)
   const filteredPics = picData.filter(pic => pic.photographer_id == user)
-  console.log('filtered pics', filteredPics)
-  const renderedPicsHtml = filteredPics.map(picture => renderPicsHtml(picture)).join('')
+  // console.log('filtered pics', filteredPics)
+  // const renderedPicsHtml = filteredPics.map(picture => renderPicsHtml(picture)).join('')
+
+  filteredPics.forEach(pic => {
+    renderPicHtml(pic)
+  })
+
   // console.log(renderedPicsHtml)
-  showPanel.insertAdjacentHTML('beforeend', renderedPicsHtml)
+  // showPanel.append(renderedPicsHtml)
+  // showPanel.insertAdjacentHTML('beforeend', renderedPicsHtml)
 }
 
 // map over all pics and return html
 
-function renderPicsHtml(picture) {
+function renderPicHtml(picture) {
   const photoHtml = new Picture(picture)
-  return photoHtml.render()
+  // console.log(photoHtml)
+  const renderedHtmlPhoto = photoHtml.render()
+  // console.log(renderedHtmlPhoto)
+
+  showPanel.append(renderedHtmlPhoto)
+  // showPanel.insertAdjacentHTML( 'beforeend', renderedHtmlPhoto );
 }
 
 // Upload a picture
+
   function postImage(form) {
+    console.log(form)
 
     let input = form[2].files[0]
     // console.log('input', input)
@@ -106,14 +114,21 @@ function renderPicsHtml(picture) {
     data.append('description', description)
     data.append('photographer_id', photographerId)
 
-    console.log('data', data)
+    // console.log('data', data)
 
-    fetch('http://localhost:3000/pictures', {
+    fetch(URL + 'pictures', {
       method: 'POST',
       body: data
     })
       .then(resp => resp.json())
-      .then(imageData => console.log(imageData))
+      .then(imageData => {
+        renderPicHtml(imageData)
+        // showPanel.insertAdjacentHTML('beforeend', renderPicHtml(imageData))
+        form[0].value = ""
+        form[1].value = ""
+        form[2].value = ""
+        form[3].value = ""
+      })
   }
 
 // upload picture form
