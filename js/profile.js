@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Variables
   let allPhotographers = []
   let user
-  user = 5
+  user = 9
   let URL = 'http://localhost:3000/'
   const myPics = document.getElementById('my-pics-btn')
   const showPanel = document.getElementById('show-panel')
@@ -56,7 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   }
 
-// Picture Gallery
+// Get all of a photographers pictures
+// **************************************************************************
 
 
 function getPhotogsPictures() {
@@ -168,6 +169,7 @@ function renderPicHtml(picture) {
       `)
   }
 
+  // Handle Albums
   // #######################################
 
   function getAlbums() {
@@ -219,7 +221,6 @@ function renderPicHtml(picture) {
 
   function renderAlbum(album) {
     const albumHtml = new Album(album)
-    console.log(albumHtml)
     const renderalb = albumHtml.render()
     return renderalb
   }
@@ -277,6 +278,30 @@ function renderPicHtml(picture) {
     const form = document.createElement('div')
     form.innerHTML = ''
 
+    // display images already in album
+
+    const imageContainer = document.createElement('div')
+    imageContainer.innerHTML = ''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     const buttonsRow = document.createElement('div')
     buttonsRow.setAttribute('class', 'row')
 
@@ -298,9 +323,111 @@ function renderPicHtml(picture) {
       }
     }
 
+    // add images to album
+
+    let clickToAddImages = false
+
+    const allImages = document.createElement('div')
+    allImages.innerHTML = ''
+
     const imageBut = document.createElement('button')
     imageBut.setAttribute('class', 'waves-effect waves-light btn')
     imageBut.innerHTML = 'Add image'
+
+    imageBut.onclick = (event) => {
+      if(clickToAddImages) {
+        allImages.innerHTML = ''
+        clickToAddImages = false
+
+      }else{
+        const pictureDisplay = displayAllPicturesToAdd()
+        console.log('picture display', pictureDisplay)
+        allImages.innerHTML = pictureDisplay
+        clickToAddImages = true
+
+
+
+
+        function displayAllPicturesToAdd() {
+          fetch(URL + 'pictures')
+            .then(resp => resp.json())
+            .then(picData => renderPictures(picData))
+        }
+
+        function renderPictures(picData) {
+          allImages.innerHTML = ""
+          const filteredPics = filterPicsToDisplay(picData)
+
+          filteredPics.forEach(pic => {
+            const picToAppend = renderPic(pic)
+            allImages.insertAdjacentHTML('beforeend', picToAppend)
+          })
+
+          document.querySelectorAll('.btn-floating').forEach(btn => {
+            btn.onclick = (event) => addPhotoToAlbum(event.target.parentNode.parentNode.parentNode.id)
+          })
+
+          function addPhotoToAlbum(picId) {
+            const data = {
+              album_id: album.id,
+              picture_id: picId
+            }
+            const reqObj = {
+              method: 'POST',
+              headers: {'Content-Type' : 'application/json'},
+              body: JSON.stringify({
+                data
+              })
+            }
+            fetch(`http://localhost:3000/album_pictures`, reqObj)
+              .then(resp => resp.json())
+              .then(albumData = console.log(albumData))
+          }
+
+        }
+
+
+        function filterPicsToDisplay(picData) {
+          // console.log(picData)
+          return picData.filter(pic => pic.photographer_id == user)
+        }
+        //
+        // // map over all pics and return html
+        //
+        function renderPic(picture) {
+          const picToAdd = new Picture(picture)
+          // console.log(photoHtml)
+          const picToAddHtml = picToAdd.renderPictureToAdd()
+          // console.log(renderedHtmlPhoto)
+          return picToAddHtml
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // document.getElementById('create-album-form').onsubmit = (event) => {
+        //   event.preventDefault()
+        //   updateAlbum(event, album)
+        // }
+        }
+      }
 
     const deleteBut = document.createElement('button')
     deleteBut.setAttribute('class', 'waves-effect waves-light btn')
@@ -309,7 +436,7 @@ function renderPicHtml(picture) {
       deleteAlb(album)
     }
 
-    showPanel.append(editBut, imageBut, deleteBut, form)
+    showPanel.append(editBut, imageBut, deleteBut, form, imageContainer, allImages)
   }
 
 
@@ -352,4 +479,5 @@ function renderPicHtml(picture) {
       console.error(error)
     });
   }
+
 })

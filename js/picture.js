@@ -373,5 +373,40 @@ class Picture{
         target.parentNode.parentNode.parentNode.parentNode.parentNode.remove()
       })
   }
-  
+
+  // *************************************************************************
+  // Display Pictures to add to album
+  // *************************************************************************
+
+  renderPictureToAdd() {
+    return (`
+        <div class="col s12 m6">
+          <div class="card" id="${this.pictureId}">
+            <div class="card-image">
+              <img src="http://localhost:3000/${this.url}">
+              <span class="card-title">${this.name}</span>
+              <a class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
+            </div>
+          </div>
+        </div>
+      `)
+  }
+
+  // return this.divElement.innerHTML = (`
+  //     <div class="col s12 m6">
+  //       <div class="card" data-photographer-id="${this.photographerId}" data-picture-id="${this.pictureId}">
+  //         <div class="card-image">
+  //           <img src="http://localhost:3000/${this.url}">
+  //           <span class="card-title">${this.name}</span>
+  //           <a class="btn-floating waves-effect waves-light blue" id="edit"><i class="material-icons">edit</i></a>
+  //           <a class="btn-floating halfway-fab waves-effect waves-light red" id="delete"><i class="material-icons">delete</i></a>
+  //         </div>
+  //         <div class="card-content">
+  //           <p>${this.description}</p>
+  //         </div>
+  //       </div>
+  //     </div>
+  //     `)
+
+
 }
