@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   myPics.addEventListener('click', (event) => {
     handleMyPictures()
   })
-  
+
   myAlbums.addEventListener('click', (event) => {
     getAlbums()
   })
@@ -245,7 +245,7 @@ function renderPicHtml(picture) {
       </div>
       `)
   }
-  
+
   function createAlbum(form) {
     const name = form[0].value
     const description = form[1].value
@@ -287,7 +287,7 @@ function renderPicHtml(picture) {
       if(click) {
         form.innerHTML = ''
         click = false
-         
+
       }else{
         form.innerHTML = renderAlbumForm()
         click = true
@@ -295,7 +295,7 @@ function renderPicHtml(picture) {
           event.preventDefault()
           updateAlbum(event, album)
         }
-      } 
+      }
     }
 
     const imageBut = document.createElement('button')
@@ -311,18 +311,20 @@ function renderPicHtml(picture) {
 
     showPanel.append(editBut, imageBut, deleteBut, form)
   }
-  
+
 
   function updateAlbum(form, album) {
     let name, description
 
-    if(form[0].value) {
-      name = form[0].value
+    console.log(form.target)
+
+    if(form.target[0].value) {
+      name = form.target[0].value
     } else {
       name = album.name
     }
-    if(form[1].value) {
-      description = from[1].value
+    if(form.target[1].value) {
+      description = form.target[1].value
     } else {
       description = album.description
     }
@@ -335,11 +337,12 @@ function renderPicHtml(picture) {
         body: JSON.stringify({
           name: name,
           description: description,
-        }) 
+        })
       })
   }
 
   function deleteAlb(album) {
+    console.log(album.id)
     fetch(`http://localhost:3000/albums/${album.id}`,{
       method: 'DELETE'
     })
