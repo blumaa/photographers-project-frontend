@@ -11,7 +11,7 @@ class Picture{
       console.log(event.target)
       if (event.target.textContent == 'delete') {
         console.log('deleting!')
-        handleDeletePicture(event.target)
+        Picture.handleDeletePicture(event.target)
       }
     })
 
@@ -135,8 +135,20 @@ class Picture{
       `)
   }
 
-  static handleDeletePicture(id) {
-    
+  static handleDeletePicture(target) {
+    console.log(target.parentNode.parentNode.parentNode.parentNode.parentNode)
+    const reqObj = {
+      method: 'DELETE'
+    }
+    const pictureId = target.id
+    console.log(pictureId)
+    fetch(`http://localhost:3000/pictures/${pictureId}`, reqObj)
+      .then(resp => resp.json() )
+      .then(data => {
+        console.log('deleted', data)
+        // console.log(target)
+        target.parentNode.parentNode.parentNode.parentNode.parentNode.remove()
+      })
   }
 
 }
