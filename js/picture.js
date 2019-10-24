@@ -385,13 +385,26 @@ class Picture{
             <div class="card-image">
               <img src="http://localhost:3000/${this.url}">
               <span class="card-title">${this.name}</span>
-              <a class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
+              <a class="btn-floating halfway-fab waves-effect waves-light green add-pic" ><i class="material-icons">add</i></a>
             </div>
           </div>
         </div>
       `)
   }
 
+  renderPictureToAlbum() {
+      return (`
+        <div class="col s12 m6">
+          <div class="card" id="${this.pictureId}">
+            <div class="card-image">
+              <img src="http://localhost:3000/${this.url}">
+              <span class="card-title">${this.name}</span>
+              <a class="btn-floating halfway-fab waves-effect waves-light red del-pic"><i class="material-icons">delete</i></a>
+            </div>
+          </div>
+        </div>
+      `)
+  }
   // return this.divElement.innerHTML = (`
   //     <div class="col s12 m6">
   //       <div class="card" data-photographer-id="${this.photographerId}" data-picture-id="${this.pictureId}">
