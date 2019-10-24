@@ -7,7 +7,7 @@ class Picture{
     this.url = picture.image
     this.divElement = document.createElement('div')
     this.divElement.dataset.pictureCardContainerId = picture.id
-    this.divElement.className = "row"
+    // this.divElement.className = "row"
     this.divElement.addEventListener('click', (event) => {
       // console.log(event.target)
       if (event.target.textContent == 'delete') {
@@ -26,12 +26,12 @@ class Picture{
 
     //     <div class="col s12 m6">
     const containerDiv = document.createElement('div')
-    containerDiv.className = 'col s12 m10'
+    containerDiv.className = 'col s12 m4'
     containerDiv.dataset.pictureCardId = `${this.pictureId}`
 
     //       <div class="card" data-photographer-id="${this.photographerId}" data-picture-id="${this.pictureId}">
     const cardDiv = document.createElement('div')
-    cardDiv.className = "card"
+    cardDiv.className = "card hoverable z-depth-1"
     cardDiv.dataset.photographerId = `${this.photographerId}`
     cardDiv.dataset.pictureId = `${this.pictureId}`
 
@@ -74,7 +74,7 @@ class Picture{
     //         <div class="card-content">
 
     const cardContentDiv = document.createElement('div')
-    cardContentDiv.className = 'card-content'
+    cardContentDiv.className = 'card-content truncate'
     //           <p>${this.description}</p>
     const cardContentP = document.createElement('p')
     cardContentP.textContent = `${this.description}`
