@@ -7,7 +7,7 @@ class Picture{
     this.url = picture.image
     this.divElement = document.createElement('div')
     this.divElement.dataset.pictureCardContainerId = picture.id
-    this.divElement.className = "row"
+    // this.divElement.className = "row"
     this.divElement.addEventListener('click', (event) => {
       // console.log(event.target)
       if (event.target.textContent == 'delete') {
@@ -26,12 +26,12 @@ class Picture{
 
     //     <div class="col s12 m6">
     const containerDiv = document.createElement('div')
-    containerDiv.className = 'col s12 m10'
+    containerDiv.className = 'col s12 m4'
     containerDiv.dataset.pictureCardId = `${this.pictureId}`
 
     //       <div class="card" data-photographer-id="${this.photographerId}" data-picture-id="${this.pictureId}">
     const cardDiv = document.createElement('div')
-    cardDiv.className = "card"
+    cardDiv.className = "card hoverable z-depth-1"
     cardDiv.dataset.photographerId = `${this.photographerId}`
     cardDiv.dataset.pictureId = `${this.pictureId}`
 
@@ -45,8 +45,10 @@ class Picture{
 
     //           <span class="card-title">${this.name}</span>
     const imageSpan = document.createElement('span')
-    imageSpan.className = "card-title"
-    imageSpan.textContent = `${this.name}`
+    imageSpan.className = "card-title grey-text text-darken-4"
+    const textH = document.createElement('h6')
+    textH.textContent = `${this.name}`
+    imageSpan.append(textH)
 
     //           <a class="btn-floating waves-effect waves-light blue" id="edit"><i class="material-icons">edit</i></a>
     const editBtnA = document.createElement('a')
@@ -74,7 +76,7 @@ class Picture{
     //         <div class="card-content">
 
     const cardContentDiv = document.createElement('div')
-    cardContentDiv.className = 'card-content'
+    cardContentDiv.className = 'card-content truncate'
     //           <p>${this.description}</p>
     const cardContentP = document.createElement('p')
     cardContentP.textContent = `${this.description}`
@@ -270,7 +272,7 @@ class Picture{
 
     updateForm.addEventListener('submit', (event) => {
       event.preventDefault()
-      console.log(event.target)
+      // console.log(event.target)
       sendUpdate(event.target)
 
     })
@@ -278,10 +280,10 @@ class Picture{
     // run a patch
 
     function sendUpdate(form) {
-      console.log(form)
+      // console.log(form)
 
       const pictureId = form.dataset.id
-      console.log(pictureId)
+      // console.log(pictureId)
       let input = form[2].files[0]
       // console.log('input', input)
       const name = form[0].value
@@ -307,9 +309,9 @@ class Picture{
       })
         .then(resp => resp.json())
         .then(picData => {
-          console.log(picData)
+          // console.log(picData)
           // updatePicCard(picData)
-          console.log('form parent node', form.parentNode)
+          // console.log('form parent node', form.parentNode)
           const updatedPic = new Picture(picData)
           const updatedPicHtml = updatedPic.render()
           form.parentNode.replaceChild(updatedPicHtml, form);
@@ -359,19 +361,67 @@ class Picture{
 // Delete a picture
 // *********************************************************************************************
   static handleDeletePicture(target) {
-    console.log(target.parentNode.parentNode.parentNode.parentNode.parentNode)
+    // console.log(target.parentNode.parentNode.parentNode.parentNode.parentNode)
     const reqObj = {
       method: 'DELETE'
     }
     const pictureId = target.id
-    console.log(pictureId)
+    // console.log(pictureId)
     fetch(`http://localhost:3000/pictures/${pictureId}`, reqObj)
       .then(resp => resp.json() )
       .then(data => {
-        console.log('deleted', data)
+        // console.log('deleted', data)
         // console.log(target)
         target.parentNode.parentNode.parentNode.parentNode.parentNode.remove()
       })
   }
-  
+
+  // *************************************************************************
+  // Display Pictures to add to album
+  // *************************************************************************
+
+  renderPictureToAdd() {
+    return (`
+        <div class="col s12 m6">
+          <div class="card" id="${this.pictureId}">
+            <div class="card-image">
+              <img src="http://localhost:3000/${this.url}">
+              <span class="card-title">${this.name}</span>
+              <a class="btn-floating halfway-fab waves-effect waves-light green add-pic" ><i class="material-icons">add</i></a>
+            </div>
+          </div>
+        </div>
+      `)
+  }
+
+  renderPictureToAlbum() {
+      return (`
+        <div class="col s12 m6">
+          <div class="card" id="${this.pictureId}">
+            <div class="card-image">
+              <img src="http://localhost:3000/${this.url}">
+              <span class="card-title">${this.name}</span>
+              <a class="btn-floating halfway-fab waves-effect waves-light red del-pic"><i class="material-icons">delete</i></a>
+            </div>
+          </div>
+        </div>
+      `)
+  }
+  // return this.divElement.innerHTML = (`
+  //     <div class="col s12 m6">
+  //       <div class="card" data-photographer-id="${this.photographerId}" data-picture-id="${this.pictureId}">
+  //         <div class="card-image">
+  //           <img src="http://localhost:3000/${this.url}">
+  //           <span class="card-title">${this.name}</span>
+  //           <a class="btn-floating waves-effect waves-light blue" id="edit"><i class="material-icons">edit</i></a>
+  //           <a class="btn-floating halfway-fab waves-effect waves-light red" id="delete"><i class="material-icons">delete</i></a>
+  //         </div>
+  //         <div class="card-content">
+  //           <p>${this.description}</p>
+  //         </div>
+  //       </div>
+  //     </div>
+  //     `)
+
+
 }

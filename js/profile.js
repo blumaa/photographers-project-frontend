@@ -2,35 +2,26 @@ document.addEventListener('DOMContentLoaded', () => {
   // Variables
   let allPhotographers = []
   let user
-  user = 5
+  user = 9
   let URL = 'http://localhost:3000/'
   const myPics = document.getElementById('my-pics-btn')
   const showPanel = document.getElementById('show-panel')
   const myAlbums = document.getElementById('my-album-btn')
+  // const editProfile = document.getElementById('edit-profile-form')
+  // const editProfile = document.getElementsByTagName('form')
+  // console.log(editProfile)
+  const profileInfoDiv = document.getElementById('profile-info')
 
 
-// Main Photographer Profile
+  // Main Photographer Profile
   getProfileInfo()
 
-// Event listeners for pictures
+// ***********************************************************************************************
+// Event listeners for side panel
+// ***********************************************************************************************
 
-// get the photographer
-  function getProfileInfo() {
-    fetch(URL + `photographers/${user}`)
-      .then(resp => resp.json())
-      .then(photogData => renderProfileInfo(photogData))
-  }
 
-  function renderProfileInfo(photogData) {
-    const profileInfoDiv = document.getElementById('profile-info')
-
-    const newPhotog = new Photographer(photogData)
-    const newPhotogHtml = newPhotog.render()
-
-    profileInfoDiv.innerHTML = newPhotogHtml
-  }
-
-// My Pictures side panel button
+  // My Pictures side panel button
 
   myPics.addEventListener('click', (event) => {
     handleMyPictures()
@@ -41,22 +32,120 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
 
-// My pictures show panel
+// ************************************************************************************
+// Display photographer profile on left panel
+// ************************************************************************************
 
-  function handleMyPictures() {
-    showPanel.innerHTML = ""
-    showPanel.innerHTML = getUploadPictureForm()
+  // get the photographer
+  function getProfileInfo() {
+    fetch(`http://localhost:3000/photographers/${user}`)
+    .then(resp => resp.json())
+    .then(photogData => renderProfileInfo(photogData))
+  }
 
-    document.getElementById('upload-image-form').onsubmit = (event) => {
+  function renderProfileInfo(photogData) {
+
+    const newPhotog = new ProfileCard(photogData)
+    const newPhotogHtml = newPhotog.render()
+
+    profileInfoDiv.innerHTML = newPhotogHtml
+    const editProfile = document.getElementById('edit-profile-form')
+    // console.log(editProfile)
+
+    editProfile.addEventListener('submit', (event) => {
       event.preventDefault()
-      postImage(event.target)
-    }
-
-    getPhotogsPictures()
+      updateProfile(event.target)
+    })
 
   }
 
-// Picture Gallery
+  // update profile info
+
+  function updateProfile(form){
+    const pName = form[0].value
+    const pBirthdate = form[1].value
+    const pBio = form[2].value
+    const pStartDate = form[3].value
+    const pCity = form[4].value
+    let pImage = form[5].files[0]
+
+    let profileData = new FormData()
+
+    profileData.append('name', pName)
+    profileData.append('birthdate', pBirthdate)
+    profileData.append('bio', pBio)
+    profileData.append('start_date', pStartDate)
+    profileData.append('city', pCity)
+    profileData.append('image', pImage)
+
+    reqObj = {
+      method: 'PATCH',
+      body: profileData
+    }
+
+    fetch(`http://localhost:3000/photographers/${form.dataset.id}`, reqObj)
+      .then(resp => resp.json())
+      .then(newPData => {
+        profileInfoDiv.innerHTML = ""
+        const updatetPhotog = new ProfileCard(newPData)
+        const updatedPhotogHtml = updatetPhotog.render()
+
+        profileInfoDiv.innerHTML = updatedPhotogHtml
+        const editProfile = document.getElementById('edit-profile-form')
+
+        editProfile.addEventListener('submit', (event) => {
+          event.preventDefault()
+          updateProfile(event.target)
+        })
+
+      })
+
+  }
+
+
+// **************************************************************************
+//  My pictures show panel
+// **************************************************************************
+
+  function handleMyPictures() {
+    showPanel.innerHTML = ""
+
+
+    const buttonAdd = document.createElement('button')
+    const buttonRow = document.createElement('div')
+    const uploadPicDiv = document.createElement('div')
+    buttonRow.setAttribute('class', 'row center-align')
+    buttonAdd.setAttribute('class', 'waves - effect waves - light btn')
+    buttonAdd.innerHTML = 'Upload Picture'
+    buttonRow.append(buttonAdd)
+    // buttonRow.append(form)
+    // form.innerHTML = ''
+    showPanel.append(buttonRow)
+    let click = false
+
+    buttonAdd.onclick = (event) => {
+      if(click) {
+        uploadPicDiv.innerHTML = ''
+        click = false
+      } else {
+        uploadPicDiv.innerHTML = getUploadPictureForm()
+        buttonRow.append(uploadPicDiv)
+        document.getElementById('upload-image-form').onsubmit = (event) => {
+          event.preventDefault()
+          postImage(event.target)
+        }
+        click = true
+      }
+    }
+
+    getPhotogsPictures()
+    // showPanel.innerHTML = getPhotogsPictures()
+    // showPanel.insertAdjacentHTML('beforeend', getPhotogsPictures())
+
+  }
+
+// Get all of a photographers pictures
+// **************************************************************************
 
 
 function getPhotogsPictures() {
@@ -96,7 +185,7 @@ function renderPicHtml(picture) {
 // Upload a picture
 
   function postImage(form) {
-    console.log(form)
+    // console.log(form)
 
     let input = form[2].files[0]
     // console.log('input', input)
@@ -168,6 +257,7 @@ function renderPicHtml(picture) {
       `)
   }
 
+  // Handle Albums
   // #######################################
 
   function getAlbums() {
@@ -212,14 +302,13 @@ function renderPicHtml(picture) {
     const renderedAlbumsHtml = albums.map(album => renderAlbum(album)).join('')
     showPanel.insertAdjacentHTML('beforeend', renderedAlbumsHtml)
 
-    document.querySelectorAll('.card').forEach(card => {
+    document.querySelectorAll('.albumCard').forEach(card => {
       card.onclick = (event) => getAlbum(card.id)
     })
   }
 
   function renderAlbum(album) {
     const albumHtml = new Album(album)
-    console.log(albumHtml)
     const renderalb = albumHtml.render()
     return renderalb
   }
@@ -261,7 +350,14 @@ function renderPicHtml(picture) {
       })
     })
     .then(resp => resp.json())
-    .then(albums => getAlbums(albums))
+    .then(album => {
+      // renderAlbumToDiv
+      showPanel.insertAdjacentHTML('beforeend', renderAlbum(album))
+      document.querySelectorAll('.albumCard').forEach(card => {
+        card.onclick = (event) => getAlbum(card.id)
+      })
+
+    })
   }
 
   function getAlbum(id) {
@@ -276,6 +372,89 @@ function renderPicHtml(picture) {
     let click = false
     const form = document.createElement('div')
     form.innerHTML = ''
+
+    // display images already in album
+
+
+    const imageContainer = document.createElement('div')
+
+    imageContainer.className = 'row card-panel'
+    imageContainer.innerHTML = pictureInAlbum()
+
+    const profInfoContainer = document.createElement('div')
+    profInfoContainer.className = 'row card-panel'
+    profInfoContainer.setAttribute('id', 'profInfo')
+
+    const nameH3 = document.createElement('h3')
+    nameH3.innerHTML = `Title: ${album.name}`
+
+    const descriptionP = document.createElement('p')
+    descriptionP.innerHTML = `Description: ${album.description}`
+
+    profInfoContainer.append(nameH3, descriptionP)
+
+    function pictureInAlbum() {
+      fetch(`http://localhost:3000/albums/${album.id}`)
+        .then(resp => resp.json())
+        .then(album => fetchPics(album))
+    }
+
+    function fetchPics(album) {
+      console.log('album', album)
+      console.log('album pictures', album.pictures)
+      imageContainer.innerHTML = ''
+        if (album.pictures) {
+          album.pictures.forEach(pic => fetchPic(pic.id))
+        }
+    }
+
+    function fetchPic(id) {
+      fetch(`http://localhost:3000/pictures/${id}`)
+        .then(resp => resp.json())
+        .then(pic => renderToAlbum(pic))
+    }
+
+    function renderToAlbum(picture) {
+
+      const picToAdd = new Picture(picture)
+      const picToAddHtml = picToAdd.renderPictureToAlbum()
+      imageContainer.insertAdjacentHTML('beforeend', picToAddHtml)
+
+      document.querySelectorAll('.del-pic').forEach(btn => {
+        btn.onclick = (event) => {
+          delPicFromAlbum(event.target.parentNode.parentNode.parentNode)
+        }
+      })
+    }
+
+    // Delete picture from Album
+
+    function delPicFromAlbum(event) {
+      const picId = event.id
+      fetch(`http://localhost:3000/album_pictures`)
+        .then(resp => resp.json())
+        .then(data => findAlbPic(data))
+
+
+      function checkData(elem) {
+        const status = (elem) => {
+          return (elem.album_id == album.id && elem.picture_id == picId)
+        }
+        return status
+      }
+
+      function findAlbPic(data) {
+        const result = data.find(checkData(data))
+
+        fetch(`http://localhost:3000/album_pictures/${result.id}`, {
+          method: 'DELETE'
+        })
+
+        return event.remove()
+      }
+    }
+
+
 
     const buttonsRow = document.createElement('div')
     buttonsRow.setAttribute('class', 'row')
@@ -298,9 +477,114 @@ function renderPicHtml(picture) {
       }
     }
 
+    // add images to album
+
+    let clickToAddImages = false
+
+    const allImages = document.createElement('div')
+
+    allImages.className = 'row card-panel'
+
+
     const imageBut = document.createElement('button')
     imageBut.setAttribute('class', 'waves-effect waves-light btn')
     imageBut.innerHTML = 'Add image'
+
+    imageBut.onclick = (event) => {
+      if(clickToAddImages) {
+        allImages.innerHTML = ''
+        clickToAddImages = false
+
+      }else{
+        const pictureDisplay = displayAllPicturesToAdd()
+        console.log('picture display', pictureDisplay)
+        allImages.innerHTML = pictureDisplay
+        clickToAddImages = true
+
+        function displayAllPicturesToAdd() {
+          fetch(URL + 'pictures')
+            .then(resp => resp.json())
+            .then(picData => renderPictures(picData))
+        }
+
+        function renderPictures(picData) {
+          allImages.innerHTML = ""
+          const filteredPics = filterPicsToDisplay(picData)
+
+          filteredPics.forEach(pic => {
+            const picToAppend = renderPic(pic)
+            allImages.insertAdjacentHTML('beforeend', picToAppend)
+          })
+
+          document.querySelectorAll('.add-pic').forEach(btn => {
+            btn.onclick = (event) => {
+              addPhotoToAlbum(event.target.parentNode.parentNode.parentNode.id)
+            }
+          })
+
+          function addPhotoToAlbum(picId) {
+            const myData = {
+              album_id: album.id,
+              picture_id: parseInt(picId)
+            }
+
+            const reqObj = {
+              method: 'POST',
+              headers: {'Content-Type' : 'application/json'},
+              body: JSON.stringify({
+                picture_id: myData.picture_id,
+                album_id: myData.album_id
+              })
+            }
+            fetch('http://localhost:3000/album_pictures')
+              .then(resp => resp.json())
+              .then(data => checkIfExist(data))
+
+            function checkData(elem) {
+              const status = (elem) => {
+                return (elem.album_id == album.id && elem.picture_id == picId)
+              }
+              return status
+            }
+
+            function checkIfExist(data) {
+              console.log(data.some(checkData(myData)))
+              if(!data.some(checkData(myData))) {
+                fetch(`http://localhost:3000/album_pictures`, reqObj)
+                  .catch(error => console.log(error))
+                fetchPic(myData.picture_id)
+              }
+
+            }
+          }
+        }
+
+        function filterPicsToDisplay(picData) {
+          // console.log(picData)
+          return picData.filter(pic => pic.photographer_id == user)
+        }
+        //
+        // // map over all pics and return html
+        //
+        function renderPic(picture) {
+          const picToAdd = new Picture(picture)
+          // console.log(photoHtml)
+          const picToAddHtml = picToAdd.renderPictureToAdd()
+          // console.log(renderedHtmlPhoto)
+          return picToAddHtml
+        }
+
+
+
+
+        // document.getElementById('create-album-form').onsubmit = (event) => {
+        //   event.preventDefault()
+        //   updateAlbum(event, album)
+        // }
+
+
+      }
+    }
 
     const deleteBut = document.createElement('button')
     deleteBut.setAttribute('class', 'waves-effect waves-light btn')
@@ -309,7 +593,7 @@ function renderPicHtml(picture) {
       deleteAlb(album)
     }
 
-    showPanel.append(editBut, imageBut, deleteBut, form)
+    showPanel.append(editBut, imageBut, deleteBut, form, profInfoContainer, imageContainer, allImages)
   }
 
 
@@ -329,6 +613,8 @@ function renderPicHtml(picture) {
       description = album.description
     }
 
+    const container = document.getElementById('profInfo')
+
     fetch(`http://localhost:3000/albums/${album.id}`, {
         method: 'PATCH',
         headers: {
@@ -338,6 +624,11 @@ function renderPicHtml(picture) {
           name: name,
           description: description,
         })
+      })
+      .then(resp => resp.json())
+      .then(data => {
+        container.firstChild.innerHTML = `Title: ${data.name}`
+        container.lastChild.innerHTML = `Description: ${data.description}`
       })
   }
 
@@ -352,4 +643,5 @@ function renderPicHtml(picture) {
       console.error(error)
     });
   }
+
 })
