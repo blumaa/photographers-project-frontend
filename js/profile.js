@@ -344,7 +344,14 @@ function renderPicHtml(picture) {
       })
     })
     .then(resp => resp.json())
-    .then(albums => getAlbums(albums))
+    .then(album => {
+      // renderAlbumToDiv
+      showPanel.insertAdjacentHTML('beforeend', renderAlbum(album))
+      document.querySelectorAll('.card').forEach(card => {
+        card.onclick = (event) => getAlbum(card.id)
+      })
+
+    })
   }
 
   function getAlbum(id) {
