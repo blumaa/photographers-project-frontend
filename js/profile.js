@@ -78,18 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
     profileData.append('city', pCity)
     profileData.append('image', pImage)
 
-    // console.dir(form)
-    // const data = {
-    //   id: form.dataset.id,
-    //   name: form[0].value,
-    //   birthdate: form[1].value,
-    //   bio: form[2].value,
-    //   start_date: form[3].value,
-    //   city: form[4].value
-    // }
-
-    // console.log(data)
-    //
     reqObj = {
       method: 'PATCH',
       body: profileData
@@ -144,7 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    showPanel.insertAdjacentHTML('beforeend', getPhotogsPictures())
+    getPhotogsPictures()
+    // showPanel.innerHTML = getPhotogsPictures()
+    // showPanel.insertAdjacentHTML('beforeend', getPhotogsPictures())
 
   }
 
@@ -189,7 +179,7 @@ function renderPicHtml(picture) {
 // Upload a picture
 
   function postImage(form) {
-    console.log(form)
+    // console.log(form)
 
     let input = form[2].files[0]
     // console.log('input', input)
