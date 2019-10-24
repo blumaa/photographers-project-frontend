@@ -361,7 +361,7 @@ function renderPicHtml(picture) {
     form.innerHTML = ''
 
     // display images already in album
-    
+
 
     const imageContainer = document.createElement('div')
 
@@ -383,12 +383,14 @@ function renderPicHtml(picture) {
     function pictureInAlbum() {
       fetch(`http://localhost:3000/albums/${album.id}`)
         .then(resp => resp.json())
-        .then(album => fetchPics(album.pictures))
+        .then(album => fetchPics(album))
     }
-    
-    function fetchPics(pics) {
+
+    function fetchPics(album) {
       imageContainer.innerHTML = ''
-      pics.forEach(pic => fetchPic(pic))
+        if (album.pictures) {
+          album.pictures.forEach(pic => fetchPic(pic))
+        }
     }
 
     function fetchPic(pic) {
@@ -396,9 +398,9 @@ function renderPicHtml(picture) {
         .then(resp => resp.json())
         .then(pic => renderToAlbum(pic))
     }
-    
+
     function renderToAlbum(picture) {
-      
+
       const picToAdd = new Picture(picture)
       const picToAddHtml = picToAdd.renderPictureToAlbum()
       imageContainer.insertAdjacentHTML('beforeend', picToAddHtml)
@@ -418,7 +420,7 @@ function renderPicHtml(picture) {
         .then(resp => resp.json())
         .then(data => findAlbPic(data))
 
-      
+
       function checkData(elem) {
         const status = (elem) => {
           return (elem.album_id == album.id && elem.picture_id == picId)
@@ -428,7 +430,7 @@ function renderPicHtml(picture) {
 
       function findAlbPic(data) {
         const result = data.find(checkData(data))
-        
+
         fetch(`http://localhost:3000/album_pictures/${result.id}`, {
           method: 'DELETE'
         })
@@ -437,8 +439,8 @@ function renderPicHtml(picture) {
       }
     }
 
-    
- 
+
+
     const buttonsRow = document.createElement('div')
     buttonsRow.setAttribute('class', 'row')
 
@@ -465,9 +467,9 @@ function renderPicHtml(picture) {
     let clickToAddImages = false
 
     const allImages = document.createElement('div')
-    
+
     allImages.className = 'row card-panel'
-    
+
 
     const imageBut = document.createElement('button')
     imageBut.setAttribute('class', 'waves-effect waves-light btn')
@@ -498,7 +500,7 @@ function renderPicHtml(picture) {
             const picToAppend = renderPic(pic)
             allImages.insertAdjacentHTML('beforeend', picToAppend)
           })
-          
+
           document.querySelectorAll('.add-pic').forEach(btn => {
             btn.onclick = (event) => {
               console.log(event.target.parentNode.classList.add('disabled'))
@@ -522,22 +524,22 @@ function renderPicHtml(picture) {
             fetch('http://localhost:3000/album_pictures')
               .then(resp => resp.json())
               .then(data => checkIfExist(data))
-            
+
             function checkData(elem) {
               const status = (elem) => {
                 return (elem.album_id == album.id && elem.picture_id == picId)
               }
               return status
             }
-            
+
             function checkIfExist(data) {
               console.log(data.some(checkData(data)))
               if(!data.some(checkData(data))) {
                 fetch(`http://localhost:3000/album_pictures`, reqObj)
                   .catch(error => console.log(error))
-                
+
               }
-              
+
               return pictureInAlbum()
             }
           }
@@ -565,7 +567,7 @@ function renderPicHtml(picture) {
         //   event.preventDefault()
         //   updateAlbum(event, album)
         // }
-        }
+
 
       }
     }
