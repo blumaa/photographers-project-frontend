@@ -91,6 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const updatedPhotogHtml = updatetPhotog.render()
 
         profileInfoDiv.innerHTML = updatedPhotogHtml
+        const editProfile = document.getElementById('edit-profile-form')
+
+        editProfile.addEventListener('submit', (event) => {
+          event.preventDefault()
+          updateProfile(event.target)
+        })
 
       })
 
