@@ -270,7 +270,7 @@ class Picture{
 
     updateForm.addEventListener('submit', (event) => {
       event.preventDefault()
-      console.log(event.target)
+      // console.log(event.target)
       sendUpdate(event.target)
 
     })
@@ -278,10 +278,10 @@ class Picture{
     // run a patch
 
     function sendUpdate(form) {
-      console.log(form)
+      // console.log(form)
 
       const pictureId = form.dataset.id
-      console.log(pictureId)
+      // console.log(pictureId)
       let input = form[2].files[0]
       // console.log('input', input)
       const name = form[0].value
@@ -307,9 +307,9 @@ class Picture{
       })
         .then(resp => resp.json())
         .then(picData => {
-          console.log(picData)
+          // console.log(picData)
           // updatePicCard(picData)
-          console.log('form parent node', form.parentNode)
+          // console.log('form parent node', form.parentNode)
           const updatedPic = new Picture(picData)
           const updatedPicHtml = updatedPic.render()
           form.parentNode.replaceChild(updatedPicHtml, form);
@@ -359,16 +359,16 @@ class Picture{
 // Delete a picture
 // *********************************************************************************************
   static handleDeletePicture(target) {
-    console.log(target.parentNode.parentNode.parentNode.parentNode.parentNode)
+    // console.log(target.parentNode.parentNode.parentNode.parentNode.parentNode)
     const reqObj = {
       method: 'DELETE'
     }
     const pictureId = target.id
-    console.log(pictureId)
+    // console.log(pictureId)
     fetch(`http://localhost:3000/pictures/${pictureId}`, reqObj)
       .then(resp => resp.json() )
       .then(data => {
-        console.log('deleted', data)
+        // console.log('deleted', data)
         // console.log(target)
         target.parentNode.parentNode.parentNode.parentNode.parentNode.remove()
       })
