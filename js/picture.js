@@ -45,8 +45,10 @@ class Picture{
 
     //           <span class="card-title">${this.name}</span>
     const imageSpan = document.createElement('span')
-    imageSpan.className = "card-title"
-    imageSpan.textContent = `${this.name}`
+    imageSpan.className = "card-title grey-text text-darken-4"
+    const textH = document.createElement('h6')
+    textH.textContent = `${this.name}`
+    imageSpan.append(textH)
 
     //           <a class="btn-floating waves-effect waves-light blue" id="edit"><i class="material-icons">edit</i></a>
     const editBtnA = document.createElement('a')

@@ -11,7 +11,7 @@ class ProfileCard {
 
   render() {
     return (`
-      <div class="card">
+      <div class="card cyan lighten-5 hoverable">
         <div class="card-image waves-effect waves-block waves-light">
           <img class="activator" src="http://localhost:3000/${this.url}">
         </div>
@@ -22,7 +22,7 @@ class ProfileCard {
           <p>Start Date: ${this.startDate}</p>
           <p>Location: ${this.city}</p>
         </div>
-        <div class="card-reveal">
+        <div class="card-reveal lime lighten-3">
           <span class="card-title grey-text text-darken-4">Edit ${this.name}'s Profile<i class="material-icons right">close</i></span>
 
           <div class="row">

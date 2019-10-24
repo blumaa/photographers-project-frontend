@@ -404,12 +404,12 @@ function renderPicHtml(picture) {
       console.log('album pictures', album.pictures)
       imageContainer.innerHTML = ''
         if (album.pictures) {
-          album.pictures.forEach(pic => fetchPic(pic))
+          album.pictures.forEach(pic => fetchPic(pic.id))
         }
     }
 
-    function fetchPic(pic) {
-      fetch(`http://localhost:3000/pictures/${pic.id}`)
+    function fetchPic(id) {
+      fetch(`http://localhost:3000/pictures/${id}`)
         .then(resp => resp.json())
         .then(pic => renderToAlbum(pic))
     }
@@ -518,22 +518,22 @@ function renderPicHtml(picture) {
 
           document.querySelectorAll('.add-pic').forEach(btn => {
             btn.onclick = (event) => {
-              console.log(event.target.parentNode.classList.add('disabled'))
               addPhotoToAlbum(event.target.parentNode.parentNode.parentNode.id)
             }
           })
 
           function addPhotoToAlbum(picId) {
-            const data = {
+            const myData = {
               album_id: album.id,
-              picture_id: picId
+              picture_id: parseInt(picId)
             }
 
             const reqObj = {
               method: 'POST',
               headers: {'Content-Type' : 'application/json'},
               body: JSON.stringify({
-                data
+                picture_id: myData.picture_id,
+                album_id: myData.album_id
               })
             }
             fetch('http://localhost:3000/album_pictures')
@@ -548,14 +548,13 @@ function renderPicHtml(picture) {
             }
 
             function checkIfExist(data) {
-              console.log(data.some(checkData(data)))
-              if(!data.some(checkData(data))) {
+              console.log(data.some(checkData(myData)))
+              if(!data.some(checkData(myData))) {
                 fetch(`http://localhost:3000/album_pictures`, reqObj)
                   .catch(error => console.log(error))
-
+                fetchPic(myData.picture_id)
               }
 
-              return pictureInAlbum()
             }
           }
         }
