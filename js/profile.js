@@ -16,6 +16,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // Main Photographer Profile
   getProfileInfo()
 
+// ********************************************************************************
+// event listener for home button
+// ********************************************************************************
+
+document.getElementById('home').addEventListener('click', () => {
+  showPanel.innerHTML = 'Welcome!'
+})
+
+
+
 // ***********************************************************************************************
 // Event listeners for side panel
 // ***********************************************************************************************
