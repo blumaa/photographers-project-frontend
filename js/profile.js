@@ -296,7 +296,7 @@ function renderPicHtml(picture) {
     const renderedAlbumsHtml = albums.map(album => renderAlbum(album)).join('')
     showPanel.insertAdjacentHTML('beforeend', renderedAlbumsHtml)
 
-    document.querySelectorAll('#dataset.album.id').forEach(card => {
+    document.querySelectorAll('.albumCard').forEach(card => {
       card.onclick = (event) => getAlbum(card.id)
     })
   }
@@ -347,7 +347,7 @@ function renderPicHtml(picture) {
     .then(album => {
       // renderAlbumToDiv
       showPanel.insertAdjacentHTML('beforeend', renderAlbum(album))
-      document.querySelectorAll('#dataset.album.id').forEach(card => {
+      document.querySelectorAll('.albumCard').forEach(card => {
         card.onclick = (event) => getAlbum(card.id)
       })
 
