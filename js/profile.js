@@ -7,30 +7,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const myPics = document.getElementById('my-pics-btn')
   const showPanel = document.getElementById('show-panel')
   const myAlbums = document.getElementById('my-album-btn')
+  // const editProfile = document.getElementById('edit-profile-form')
+  // const editProfile = document.getElementsByTagName('form')
+  // console.log(editProfile)
+  const profileInfoDiv = document.getElementById('profile-info')
 
 
-// Main Photographer Profile
+  // Main Photographer Profile
   getProfileInfo()
 
-// Event listeners for pictures
+// ***********************************************************************************************
+// Event listeners for side panel
+// ***********************************************************************************************
 
-// get the photographer
-  function getProfileInfo() {
-    fetch(URL + `photographers/${user}`)
-      .then(resp => resp.json())
-      .then(photogData => renderProfileInfo(photogData))
-  }
 
-  function renderProfileInfo(photogData) {
-    const profileInfoDiv = document.getElementById('profile-info')
-
-    const newPhotog = new Photographer(photogData)
-    const newPhotogHtml = newPhotog.render()
-
-    profileInfoDiv.innerHTML = newPhotogHtml
-  }
-
-// My Pictures side panel button
+  // My Pictures side panel button
 
   myPics.addEventListener('click', (event) => {
     handleMyPictures()
@@ -41,18 +32,119 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
 
-// My pictures show panel
+// ************************************************************************************
+// Display photographer profile on left panel
+// ************************************************************************************
+
+  // get the photographer
+  function getProfileInfo() {
+    fetch(`http://localhost:3000/photographers/${user}`)
+    .then(resp => resp.json())
+    .then(photogData => renderProfileInfo(photogData))
+  }
+
+  function renderProfileInfo(photogData) {
+
+    const newPhotog = new ProfileCard(photogData)
+    const newPhotogHtml = newPhotog.render()
+
+    profileInfoDiv.innerHTML = newPhotogHtml
+    const editProfile = document.getElementById('edit-profile-form')
+    // console.log(editProfile)
+
+    editProfile.addEventListener('submit', (event) => {
+      event.preventDefault()
+      updateProfile(event.target)
+    })
+
+  }
+
+  // update profile info
+
+  function updateProfile(form){
+    const pName = form[0].value
+    const pBirthdate = form[1].value
+    const pBio = form[2].value
+    const pStartDate = form[3].value
+    const pCity = form[4].value
+    let pImage = form[5].files[0]
+
+    let profileData = new FormData()
+
+    profileData.append('name', pName)
+    profileData.append('birthdate', pBirthdate)
+    profileData.append('bio', pBio)
+    profileData.append('start_date', pStartDate)
+    profileData.append('city', pCity)
+    profileData.append('image', pImage)
+
+    // console.dir(form)
+    // const data = {
+    //   id: form.dataset.id,
+    //   name: form[0].value,
+    //   birthdate: form[1].value,
+    //   bio: form[2].value,
+    //   start_date: form[3].value,
+    //   city: form[4].value
+    // }
+
+    // console.log(data)
+    //
+    reqObj = {
+      method: 'PATCH',
+      body: profileData
+    }
+
+    fetch(`http://localhost:3000/photographers/${form.dataset.id}`, reqObj)
+      .then(resp => resp.json())
+      .then(newPData => {
+        profileInfoDiv.innerHTML = ""
+        const updatetPhotog = new ProfileCard(newPData)
+        const updatedPhotogHtml = updatetPhotog.render()
+
+        profileInfoDiv.innerHTML = updatedPhotogHtml
+
+      })
+
+  }
+
+
+// **************************************************************************
+//  My pictures show panel
+// **************************************************************************
 
   function handleMyPictures() {
     showPanel.innerHTML = ""
-    showPanel.innerHTML = getUploadPictureForm()
 
-    document.getElementById('upload-image-form').onsubmit = (event) => {
-      event.preventDefault()
-      postImage(event.target)
+
+    const buttonAdd = document.createElement('button')
+    const buttonRow = document.createElement('div')
+    const uploadPicDiv = document.createElement('div')
+    buttonRow.setAttribute('class', 'row center-align')
+    buttonAdd.setAttribute('class', 'waves - effect waves - light btn')
+    buttonAdd.innerHTML = 'Upload Picture'
+    buttonRow.append(buttonAdd)
+    // buttonRow.append(form)
+    // form.innerHTML = ''
+    showPanel.append(buttonRow)
+    let click = false
+
+    buttonAdd.onclick = (event) => {
+      if(click) {
+        uploadPicDiv.innerHTML = ''
+        click = false
+      } else {
+        uploadPicDiv.innerHTML = getUploadPictureForm()
+        buttonRow.append(uploadPicDiv)
+        document.getElementById('upload-image-form').onsubmit = (event) => {
+          event.preventDefault()
+          postImage(event.target)
+        }
+        click = true
+      }
     }
 
-    getPhotogsPictures()
+    showPanel.insertAdjacentHTML('beforeend', getPhotogsPictures())
 
   }
 
@@ -284,24 +376,6 @@ function renderPicHtml(picture) {
     imageContainer.innerHTML = ''
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     const buttonsRow = document.createElement('div')
     buttonsRow.setAttribute('class', 'row')
 
@@ -401,25 +475,6 @@ function renderPicHtml(picture) {
           // console.log(renderedHtmlPhoto)
           return picToAddHtml
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         // document.getElementById('create-album-form').onsubmit = (event) => {
