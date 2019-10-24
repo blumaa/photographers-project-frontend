@@ -279,29 +279,82 @@ function renderPicHtml(picture) {
     form.innerHTML = ''
 
     // display images already in album
+    
 
     const imageContainer = document.createElement('div')
-    imageContainer.innerHTML = ''
+    imageContainer.className = 'row card-panel'
+    imageContainer.innerHTML = pictureInAlbum()
 
+    const profInfoContainer = document.createElement('div')
+    profInfoContainer.className = 'row card-panel'
+    profInfoContainer.setAttribute('id', 'profInfo')
 
+    const nameH3 = document.createElement('h3')
+    nameH3.innerHTML = `Title: ${album.name}`
 
+    const descriptionP = document.createElement('p')
+    descriptionP.innerHTML = `Description: ${album.description}`
 
+    profInfoContainer.append(nameH3, descriptionP)
 
+    function pictureInAlbum() {
+      fetch(`http://localhost:3000/albums/${album.id}`)
+        .then(resp => resp.json())
+        .then(album => fetchPics(album.pictures))
+    }
+    
+    function fetchPics(pics) {
+      imageContainer.innerHTML = ''
+      pics.forEach(pic => fetchPic(pic))
+    }
 
+    function fetchPic(pic) {
+      fetch(`http://localhost:3000/pictures/${pic.id}`)
+        .then(resp => resp.json())
+        .then(pic => renderToAlbum(pic))
+    }
+    
+    function renderToAlbum(picture) {
+      
+      const picToAdd = new Picture(picture)
+      const picToAddHtml = picToAdd.renderPictureToAlbum()
+      imageContainer.insertAdjacentHTML('beforeend', picToAddHtml)
 
+      document.querySelectorAll('.del-pic').forEach(btn => {
+        btn.onclick = (event) => {
+          delPicFromAlbum(event.target.parentNode.parentNode.parentNode)
+        }
+      })
+    }
 
+    // Delete picture from Album
 
+    function delPicFromAlbum(event) {
+      const picId = event.id
+      fetch(`http://localhost:3000/album_pictures`)
+        .then(resp => resp.json())
+        .then(data => findAlbPic(data))
 
+      
+      function checkData(elem) {
+        const status = (elem) => {
+          return (elem.album_id == album.id && elem.picture_id == picId)
+        }
+        return status
+      }
 
+      function findAlbPic(data) {
+        const result = data.find(checkData(data))
+        
+        fetch(`http://localhost:3000/album_pictures/${result.id}`, {
+          method: 'DELETE'
+        })
 
+        return event.remove()
+      }
+    }
 
-
-
-
-
-
-
-
+    
     const buttonsRow = document.createElement('div')
     buttonsRow.setAttribute('class', 'row')
 
@@ -328,7 +381,9 @@ function renderPicHtml(picture) {
     let clickToAddImages = false
 
     const allImages = document.createElement('div')
-    allImages.innerHTML = ''
+    
+    allImages.className = 'row card-panel'
+    
 
     const imageBut = document.createElement('button')
     imageBut.setAttribute('class', 'waves-effect waves-light btn')
@@ -345,9 +400,6 @@ function renderPicHtml(picture) {
         allImages.innerHTML = pictureDisplay
         clickToAddImages = true
 
-
-
-
         function displayAllPicturesToAdd() {
           fetch(URL + 'pictures')
             .then(resp => resp.json())
@@ -362,9 +414,12 @@ function renderPicHtml(picture) {
             const picToAppend = renderPic(pic)
             allImages.insertAdjacentHTML('beforeend', picToAppend)
           })
-
-          document.querySelectorAll('.btn-floating').forEach(btn => {
-            btn.onclick = (event) => addPhotoToAlbum(event.target.parentNode.parentNode.parentNode.id)
+          
+          document.querySelectorAll('.add-pic').forEach(btn => {
+            btn.onclick = (event) => {
+              console.log(event.target.parentNode.classList.add('disabled'))
+              addPhotoToAlbum(event.target.parentNode.parentNode.parentNode.id)
+            }
           })
 
           function addPhotoToAlbum(picId) {
@@ -372,6 +427,7 @@ function renderPicHtml(picture) {
               album_id: album.id,
               picture_id: picId
             }
+
             const reqObj = {
               method: 'POST',
               headers: {'Content-Type' : 'application/json'},
@@ -379,13 +435,29 @@ function renderPicHtml(picture) {
                 data
               })
             }
-            fetch(`http://localhost:3000/album_pictures`, reqObj)
+            fetch('http://localhost:3000/album_pictures')
               .then(resp => resp.json())
-              .then(albumData = console.log(albumData))
+              .then(data => checkIfExist(data))
+            
+            function checkData(elem) {
+              const status = (elem) => {
+                return (elem.album_id == album.id && elem.picture_id == picId)
+              }
+              return status
+            }
+            
+            function checkIfExist(data) {
+              console.log(data.some(checkData(data)))
+              if(!data.some(checkData(data))) {
+                fetch(`http://localhost:3000/album_pictures`, reqObj)
+                  .catch(error => console.log(error))
+                
+              }
+              
+              return pictureInAlbum()
+            }
           }
-
         }
-
 
         function filterPicsToDisplay(picData) {
           // console.log(picData)
@@ -401,33 +473,8 @@ function renderPicHtml(picture) {
           // console.log(renderedHtmlPhoto)
           return picToAddHtml
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // document.getElementById('create-album-form').onsubmit = (event) => {
-        //   event.preventDefault()
-        //   updateAlbum(event, album)
-        // }
-        }
       }
+    }
 
     const deleteBut = document.createElement('button')
     deleteBut.setAttribute('class', 'waves-effect waves-light btn')
@@ -436,7 +483,7 @@ function renderPicHtml(picture) {
       deleteAlb(album)
     }
 
-    showPanel.append(editBut, imageBut, deleteBut, form, imageContainer, allImages)
+    showPanel.append(editBut, imageBut, deleteBut, form, profInfoContainer, imageContainer, allImages)
   }
 
 
@@ -456,6 +503,8 @@ function renderPicHtml(picture) {
       description = album.description
     }
 
+    const container = document.getElementById('profInfo')
+
     fetch(`http://localhost:3000/albums/${album.id}`, {
         method: 'PATCH',
         headers: {
@@ -465,6 +514,11 @@ function renderPicHtml(picture) {
           name: name,
           description: description,
         })
+      })
+      .then(resp => resp.json())
+      .then(data => {
+        container.firstChild.innerHTML = `Title: ${data.name}`
+        container.lastChild.innerHTML = `Description: ${data.description}`
       })
   }
 
