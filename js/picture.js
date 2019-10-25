@@ -5,6 +5,7 @@ class Picture{
     this.description = picture.description,
     this.photographerId = picture.photographer_id
     this.url = picture.image
+    this.likes = picture.likes
     this.divElement = document.createElement('div')
     this.divElement.dataset.pictureCardContainerId = picture.id
     // this.divElement.className = "row"
@@ -252,9 +253,6 @@ class Picture{
 
     submitBtn.append(submitI)
 
-
-
-
     updateFormFileFieldInput.append(fileFieldBtnDiv, fileFieldPathDiv)
 
     updateFormFileCol.append(updateFormFileFieldInput)
@@ -389,6 +387,7 @@ class Picture{
               <img src="http://localhost:3000/${this.url}">
               <span class="card-title">${this.name}</span>
               <a class="btn-floating halfway-fab waves-effect waves-light green add-pic" ><i class="material-icons">add</i></a>
+              <span class=" btn blue left">${this.likes.length} Like</span>
             </div>
           </div>
         </div>
@@ -403,10 +402,29 @@ class Picture{
               <img src="http://localhost:3000/${this.url}">
               <span class="card-title">${this.name}</span>
               <a class="btn-floating halfway-fab waves-effect waves-light red del-pic"><i class="material-icons">delete</i></a>
+              <span class="btn blue left">${this.likes.length} Like</span>
             </div>
           </div>
         </div>
       `)
+  }
+
+  
+
+  renderPictureToIndex() {
+    return (`
+      <div class="col s12 m6">
+        <div class="card" id="${this.pictureId}">
+          <div class="card-image">
+            <img src="http://localhost:3000/${this.url}">
+            <span class="card-title">Card Title</span>
+          </div>
+          <div class="card-action">
+            <p><a class="waves-effect waves-light btn-small like-button">${this.likes.length} Like</a></p>
+          </div>
+        </div>
+      </div>
+    `)
   }
   // return this.divElement.innerHTML = (`
   //     <div class="col s12 m6">
