@@ -76,9 +76,10 @@ class Picture{
     //         <div class="card-content">
 
     const cardContentDiv = document.createElement('div')
-    cardContentDiv.className = 'card-content truncate'
+    cardContentDiv.className = 'card-content teal lighten-'
     //           <p>${this.description}</p>
     const cardContentP = document.createElement('p')
+    cardContentP.className = "truncate blue-text text-darken-4"
     cardContentP.textContent = `${this.description}`
 
     cardContentDiv.append(cardContentP)
@@ -137,7 +138,7 @@ class Picture{
 
     // render form
     const updateForm = document.createElement('form')
-    updateForm.className = "col s6"
+    updateForm.className = "col s6 card hoverable z-depth-1"
     updateForm.id = "update-image-form"
     updateForm.dataset.id = `${target.id}`
 
@@ -303,7 +304,7 @@ class Picture{
 
       // console.log('data', data)
 
-      fetch(`http://localhost:3000/pictures/${pictureId}`, {
+      fetch(`https://protected-hollows-16401.herokuapp.com/pictures/${pictureId}`, {
         method: 'PATCH',
         body: data
       })
