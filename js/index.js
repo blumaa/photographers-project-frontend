@@ -1,11 +1,18 @@
 function main() {
-  let userinput = prompt('Enter your id')
-  photogId = parseInt(userinput)
-  localStorage.setItem("user", userinput);
+  let photogId
+  if(localStorage.getItem("user")) {
+    photogId = parseInt(localStorage.getItem("user"))
+  } else {
+    let userinput = prompt('Enter your id')
+    photogId = parseInt(userinput)
+    localStorage.setItem("user", userinput);
+  }
+  
 
   document.addEventListener('DOMContentLoaded', () => {
     getAllPhotographers()
     myProfileButton()
+    logOutButton()
   })
 
 
@@ -121,10 +128,15 @@ function main() {
   
   const myProfileButton = () => {
     const myProfile = document.querySelector('.my-profile')
-    console.log(myProfile)
     myProfile.href = `/Users/andrew/Desktop/Gary_project/photographers-project-frontend/profile.html`
-    myProfile.onclick = (event) => { 
-      console.log(myProfile.href)
+  }
+
+  const logOutButton = () => {
+    const logOut = document.querySelector('.log-out')
+    console.log(logOut)
+    logOut.href = `/Users/andrew/Desktop/Gary_project/photographers-project-frontend/index.html`
+    logOut.onclick = (event) => {
+      localStorage.removeItem("user")
     }
   }
 }
