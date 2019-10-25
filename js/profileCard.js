@@ -74,4 +74,26 @@ class ProfileCard {
       </div>
       `)
   }
+
+  renderToIndex() {
+    return (`
+      <div class="col s12 m12 click-photographer" id=${this.id}>
+        <div class="card-panel grey lighten-5 z-depth-1">
+          <div class="row valign-wrapper">
+            <div class="col s5">
+              <img src="http://localhost:3000/${this.url}" alt="" class="circle responsive-img"> <!-- notice the "circle" class -->
+            </div>
+            <div class="col s6">
+                <p class="flow-text">Name: ${this.name}</p>
+                <p class="black-text">Bio: ${this.bio}</p>
+                <p class="black-text">City: ${this.city}</p>
+            </div>
+            <div class="col s2">
+                <p><a class="waves-effect waves-light btn-small">Follow</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `)
+  }
 }

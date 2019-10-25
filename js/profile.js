@@ -1,8 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Variables
   let allPhotographers = []
-  let user
-  user = 9
+  let user = localStorage.getItem("user")
   let URL = 'http://localhost:3000/'
   const myPics = document.getElementById('my-pics-btn')
   const showPanel = document.getElementById('show-panel')
