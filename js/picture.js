@@ -138,7 +138,7 @@ class Picture{
 
     // render form
     const updateForm = document.createElement('form')
-    updateForm.className = "col s6 card hoverable z-depth-1"
+    updateForm.className = "col s4 card hoverable z-depth-1"
     updateForm.id = "update-image-form"
     updateForm.dataset.id = `${target.id}`
 
