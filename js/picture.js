@@ -386,6 +386,7 @@ class Picture{
               <img src="http://localhost:3000/${this.url}">
               <span class="card-title">${this.name}</span>
               <a class="btn-floating halfway-fab waves-effect waves-light green add-pic" ><i class="material-icons">add</i></a>
+              <span class=" btn blue left">${this.likes.length} Like</span>
             </div>
           </div>
         </div>
@@ -400,6 +401,7 @@ class Picture{
               <img src="http://localhost:3000/${this.url}">
               <span class="card-title">${this.name}</span>
               <a class="btn-floating halfway-fab waves-effect waves-light red del-pic"><i class="material-icons">delete</i></a>
+              <span class="btn blue left">${this.likes.length} Like</span>
             </div>
           </div>
         </div>

@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Main Photographer Profile
   getProfileInfo()
-
 // ********************************************************************************
 // event listener for home button
 // ********************************************************************************
@@ -22,6 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('home').addEventListener('click', () => {
   showPanel.innerHTML = 'Welcome!'
 })
+
+const logOut = document.querySelector('.log-out')
+logOut.href = `/Users/andrew/Desktop/Gary_project/photographers-project-frontend/index.html`
+logOut.onclick = (event) => {
+  localStorage.removeItem("user")
+}
 
 
 
